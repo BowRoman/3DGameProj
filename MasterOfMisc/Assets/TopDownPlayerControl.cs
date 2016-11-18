@@ -12,10 +12,19 @@ public class TopDownPlayerControl : MonoBehaviour {
 	[SerializeField]
 	float playerSpeedMax = 10.0f; // maximum speed of player
 
-	float rightVelocity = 0.0f;
-	float upVelocity = 0.0f;
-	float downVelocity = 0.0f;
+    [SerializeField]
+    float rightVelocity = 0.0f;
+    [SerializeField]
+    float upVelocity = 0.0f;
+    [SerializeField]
+    float downVelocity = 0.0f;
+    [SerializeField]
 	float leftVelocity = 0.0f;
+
+    bool wPressed = false;
+    bool aPressed = false;
+    bool sPressed = false;
+    bool dPressed = false;
 
 	[SerializeField]
 	float accelerationSpeed = 1.0f;
@@ -30,33 +39,118 @@ public class TopDownPlayerControl : MonoBehaviour {
 
 	void MovePlayer()
 	{
+        float verticalSpeed = upVelocity - downVelocity;
+        float horizontalSpeed = rightVelocity - leftVelocity;
+        if(verticalSpeed > playerSpeedMax)
+        {
+            verticalSpeed = playerSpeedMax;
+        }
+        if(verticalSpeed < 0.0f - playerSpeedMax)
+        {
+            verticalSpeed = (0.0f - playerSpeedMax);
+        }
+        if(horizontalSpeed > playerSpeedMax)
+        {
+            horizontalSpeed = playerSpeedMax;
+        }
+        if(horizontalSpeed < 0.0f - playerSpeedMax)
+        {
+            horizontalSpeed = (0.0f - playerSpeedMax);
+        }
 		transform.Translate((rightVelocity - leftVelocity) * Time.deltaTime, (upVelocity - downVelocity) * Time.deltaTime, 0);
 	}
 
 	void ReadDirection()
 	{
-		if(downVelocity <= 0)
-		{
-			upVelocity = setVelocity("w", upVelocity);
-			playerSpeed = (rightVelocity + upVelocity + downVelocity + leftVelocity);
-		}
-		if(rightVelocity <= 0)
-		{
-			leftVelocity = setVelocity("a", leftVelocity);
-			playerSpeed = (rightVelocity + upVelocity + downVelocity + leftVelocity);
-		}
-		if(upVelocity <= 0)
-		{
-			downVelocity = setVelocity("s", downVelocity);
-			playerSpeed = (rightVelocity + upVelocity + downVelocity + leftVelocity);
-		}
-		if(leftVelocity <= 0)
-		{
-			rightVelocity = setVelocity("d", rightVelocity);
-			playerSpeed = (rightVelocity + upVelocity + downVelocity + leftVelocity);
-		}
+		upVelocity = setVelocity("w", upVelocity);
+        leftVelocity = setVelocity("a", leftVelocity);
+        downVelocity = setVelocity("s", downVelocity);
+        rightVelocity = setVelocity("d", rightVelocity);
+		playerSpeed = (rightVelocity + upVelocity + downVelocity + leftVelocity);
 	}
-	float setVelocity(string key, float velocity)
+
+    float setVelocity(string key, float velocity)
+    {
+        if (Input.GetKey(key))
+        {
+            velocity = playerSpeedMax / 2;
+            switch (key)
+            {
+                case "w":
+                    wPressed = true;
+                    if(leftVelocity+rightVelocity < playerSpeedMax/2)
+                    {
+                        velocity += (playerSpeedMax / 2) - (leftVelocity + rightVelocity);
+                    }
+                    if(sPressed)
+                    {
+                        velocity = 0;
+                    }
+                    break;
+                case "s":
+                    sPressed = true;
+                    if (leftVelocity + rightVelocity < playerSpeedMax / 2)
+                    {
+                        velocity += (playerSpeedMax / 2) - (leftVelocity + rightVelocity);
+                    }
+                    if(wPressed)
+                    {
+                        velocity = 0;
+                    }
+                    break;
+                case "a":
+                    aPressed = true;
+                    if (upVelocity + downVelocity < playerSpeedMax / 2)
+                    {
+                        velocity += (playerSpeedMax / 2) - (upVelocity + downVelocity);
+                    }
+                    if (dPressed)
+                    {
+                        velocity = 0;
+                    }
+                    break;
+                case "d":
+                    dPressed = true;
+                    if (upVelocity + downVelocity < playerSpeedMax / 2)
+                    {
+                        velocity += (playerSpeedMax / 2) - (upVelocity + downVelocity);
+                    }
+                    if (aPressed)
+                    {
+                        velocity = 0;
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        else
+        {
+            if(velocity > 0)
+            {
+                velocity -= accelerationSpeed;
+            }
+            if(velocity < 0)
+            {
+                velocity = 0;
+            }
+            switch(key)
+            {
+                case "w": wPressed = false;
+                    break;
+                case "a": aPressed = false;
+                    break;
+                case "s": sPressed = false;
+                    break;
+                case "d": dPressed = false;
+                    break;
+                default:
+                    break;
+            }
+        }
+        return velocity;
+    }
+	float setVelocityAccel(string key, float velocity)
 	{
 		if (Input.GetKey(key))
 		{
