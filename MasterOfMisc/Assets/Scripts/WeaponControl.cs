@@ -23,8 +23,7 @@ public class WeaponControl : MonoBehaviour {
 
     public void FireBullet()
     {
-        print("Fire called");
-        GameObject projectileClone = (Instantiate(projectile, transform.position, Quaternion.Euler(new Vector3(0, 0, 1)))) as GameObject;
+        GameObject projectileClone = Instantiate(projectile, transform.position, Quaternion.Euler(new Vector3(0, 0, 1))) as GameObject;
         projectileClone.GetComponent<Rigidbody2D>().velocity = lookPos * projectileClone.GetComponent<ProjectileControl>().speed;
     }
 
