@@ -4,7 +4,7 @@ using System.Collections;
 public class ProjectileControl : MonoBehaviour {
 
     [SerializeField]
-    public float speed = 10.0f;
+    float speed = 10.0f;
 
     float lifespan = 5.0f;
 
@@ -22,8 +22,7 @@ public class ProjectileControl : MonoBehaviour {
     {
         Destroy(gameObject);
     }
-
-    // Destroys object when lifespan is exceeded.
+    
     void LifeClock()
     {
         lifespan -= Time.deltaTime;
@@ -31,5 +30,10 @@ public class ProjectileControl : MonoBehaviour {
         {
             Destroy(gameObject);
         }
+    }
+
+   public float GetSpeed()
+    {
+        return speed;
     }
 }
