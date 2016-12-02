@@ -1,41 +1,66 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class TopDownPlayerControl : MonoBehaviour {
 
-	[SerializeField]
-	float playerSpeedMin = 0.0f; // initial speed of player
+    [SerializeField]
+    int playerHealthMax = 100;
+    int playerHealth;
 
-	[SerializeField]
+    [SerializeField]
+    Image playerHealthBar;
+
+    [SerializeField]
+    float invulnerabilityTime = 0.5f;
+    float timeSinceHit;
+
+	float playerSpeedMin = 0.0f; // initial speed of player
 	float playerSpeed = 0.0f; // current speed of player
 
 	[SerializeField]
 	float playerSpeedMax = 10.0f; // maximum speed of player
-
-    [SerializeField]
+    
     float rightVelocity = 0.0f;
-    [SerializeField]
     float upVelocity = 0.0f;
-    [SerializeField]
     float downVelocity = 0.0f;
-    [SerializeField]
 	float leftVelocity = 0.0f;
 
     bool wPressed = false;
     bool aPressed = false;
     bool sPressed = false;
     bool dPressed = false;
-
-	[SerializeField]
+    
 	float accelerationSpeed = 1.0f;
 
 	float stopped = 0.0f;
+
+    void Start()
+    {
+        playerHealth = playerHealthMax;
+    }
  
 	void Update()
-	{
-		MovePlayer();
-		ReadDirection();
+    {
+        ReadDirection();
+        MovePlayer();
+        timeSinceHit += Time.deltaTime;
 	}
+
+    public void Damage(int points)
+    {
+        if(timeSinceHit >= invulnerabilityTime)
+        {
+            timeSinceHit = 0;
+            playerHealth -= points;
+            playerHealthBar.fillAmount = (float)playerHealth / (float)playerHealthMax;
+            if (playerHealth <= 5)
+            {
+                playerHealth = 0;
+                // reset level / end game
+            }
+        }
+    }
 
 	void MovePlayer()
 	{
