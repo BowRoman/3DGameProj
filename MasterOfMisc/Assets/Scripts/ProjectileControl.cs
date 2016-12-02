@@ -10,12 +10,7 @@ public class ProjectileControl : MonoBehaviour {
     int damage = 10;
 
     float lifespan = 5.0f;
-
-	void Start ()
-    {
-        print("Projectile created.");
-    }
-	
+    
 	void Update ()
     {
         LifeClock();
@@ -23,16 +18,19 @@ public class ProjectileControl : MonoBehaviour {
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if(other.gameObject.tag == "Player")
+        GameObject hitObject = other.gameObject;
+        if(hitObject.tag == "Player")
         {
             return;
         }
-        if (other.gameObject.tag == "Enemy")
+        if (hitObject.tag == "EnemyWeapon")
         {
-            if(other.gameObject.name == "EnemyBasic")
-            {
-                other.gameObject.GetComponent<EnemyBasicControl>().Damage(damage);
-            }
+            hitObject = hitObject.transform.parent.gameObject;
+            print("Hit weapon");
+        }
+        if (hitObject.tag == "Enemy")
+        {
+            hitObject.GetComponent<EnemyBasicControl>().Damage(damage);
         }
         Destroy(gameObject);
     }

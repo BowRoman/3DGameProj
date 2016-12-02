@@ -26,6 +26,9 @@ public class EnemyBasicControl : MonoBehaviour {
     
     void Start()
     {
+        Color newAlpha = healthBar.color;
+        newAlpha.a = 0.0f;
+        healthBar.color = newAlpha;
         health = healthMax;
     }
 
@@ -51,6 +54,12 @@ public class EnemyBasicControl : MonoBehaviour {
 
     public void Damage(int points)
     {
+        if(health >= healthMax)
+        {
+            Color newAlpha = healthBar.color;
+            newAlpha.a = 255.0f;
+            healthBar.color = newAlpha;
+        }
         health -= points;
         healthBar.fillAmount = (float)health / (float)healthMax;
         if(health <= 0)

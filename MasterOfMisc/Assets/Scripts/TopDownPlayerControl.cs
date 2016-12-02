@@ -35,9 +35,13 @@ public class TopDownPlayerControl : MonoBehaviour {
 
 	float stopped = 0.0f;
 
+    [SerializeField]
+    Image currentWeaponImage;
+
     void Start()
     {
         playerHealth = playerHealthMax;
+        SetWeapon();
     }
  
 	void Update()
@@ -60,6 +64,11 @@ public class TopDownPlayerControl : MonoBehaviour {
                 // reset level / end game
             }
         }
+    }
+
+    void SetWeapon()
+    {
+        currentWeaponImage.sprite = GetComponentInChildren<WeaponControl>().projectile.GetComponent<SpriteRenderer>().sprite;
     }
 
 	void MovePlayer()

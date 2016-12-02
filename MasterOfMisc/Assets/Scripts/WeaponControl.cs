@@ -4,11 +4,12 @@ using System.Collections;
 public class WeaponControl : MonoBehaviour {
 
     [SerializeField]
-    GameObject projectile;
+    public GameObject projectile;
     
     Vector3 lookPos;
 
-    void Start () {
+    void Start()
+    {
 	
 	}
 	
