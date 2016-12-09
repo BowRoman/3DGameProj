@@ -26,7 +26,7 @@ public class ProjectileControl : MonoBehaviour {
         if (hitObject.tag == "EnemyWeapon")
         {
             hitObject = hitObject.transform.parent.gameObject;
-            print("Hit weapon");
+            // print("Hit weapon");
         }
         if (hitObject.tag == "Enemy")
         {

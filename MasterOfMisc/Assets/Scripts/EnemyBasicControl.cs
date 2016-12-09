@@ -23,6 +23,8 @@ public class EnemyBasicControl : MonoBehaviour {
     [SerializeField]
     float timeBetweenAttacks = 0.5f;
     float lastAttack = 0.0f;
+
+    bool hasSeenPlayer = false;
     
     void Start()
     {
@@ -34,16 +36,27 @@ public class EnemyBasicControl : MonoBehaviour {
 
     void FixedUpdate()
     {
-        float z = Mathf.Atan2((player.position.y - transform.position.y), (player.position.x - transform.position.x)) * Mathf.Rad2Deg - 90;
-
-        transform.eulerAngles = new Vector3(0, 0, z);
-
-        GetComponent<Rigidbody2D>().velocity = gameObject.transform.up * speed;
-
-        lastAttack += Time.deltaTime;
-        if(!attacking && touchingPlayer && lastAttack >= timeBetweenAttacks)
+        if(!hasSeenPlayer)
         {
-            if(!anim.GetCurrentAnimatorStateInfo(0).IsName("Attack1"))
+            Vector3 viewPos = Camera.main.WorldToViewportPoint(transform.position);
+            if(viewPos.x >= 0 && viewPos.x <= 1 && viewPos.y >= 0 && viewPos.y <= 1)
+            {
+                hasSeenPlayer = true;
+            }
+        }
+        else
+        {
+            MoveEnemy();
+            Attack();
+        }
+    }
+
+    void Attack()
+    {
+        lastAttack += Time.deltaTime;
+        if (!attacking && touchingPlayer && lastAttack >= timeBetweenAttacks)
+        {
+            if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Attack1"))
             {
                 anim.SetTrigger("Attack1");
                 attacking = true;
@@ -52,19 +65,31 @@ public class EnemyBasicControl : MonoBehaviour {
         }
     }
 
+    void MoveEnemy()
+    {
+        float z = Mathf.Atan2((player.position.y - transform.position.y), (player.position.x - transform.position.x)) * Mathf.Rad2Deg - 90;
+
+        transform.eulerAngles = new Vector3(0, 0, z);
+
+        GetComponent<Rigidbody2D>().velocity = gameObject.transform.up * speed;
+    }
+
     public void Damage(int points)
     {
-        if(health >= healthMax)
+        if(hasSeenPlayer)
         {
-            Color newAlpha = healthBar.color;
-            newAlpha.a = 255.0f;
-            healthBar.color = newAlpha;
-        }
-        health -= points;
-        healthBar.fillAmount = (float)health / (float)healthMax;
-        if(health <= 0)
-        {
-            Destroy(gameObject);
+            if (health >= healthMax)
+            {
+                Color newAlpha = healthBar.color;
+                newAlpha.a = 255.0f;
+                healthBar.color = newAlpha;
+            }
+            health -= points;
+            healthBar.fillAmount = (float)health / (float)healthMax;
+            if (health <= 0)
+            {
+                Destroy(gameObject);
+            }
         }
     }
 

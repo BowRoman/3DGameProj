@@ -15,7 +15,7 @@ public class TopDownPlayerControl : MonoBehaviour {
     float invulnerabilityTime = 0.5f;
     float timeSinceHit;
 
-	float playerSpeedMin = 0.0f; // initial speed of player
+	// float playerSpeedMin = 0.0f; // initial speed of player
 	float playerSpeed = 0.0f; // current speed of player
 
 	[SerializeField]
@@ -33,10 +33,12 @@ public class TopDownPlayerControl : MonoBehaviour {
     
 	float accelerationSpeed = 1.0f;
 
-	float stopped = 0.0f;
+	// float stopped = 0.0f;
 
     [SerializeField]
     Image currentWeaponImage;
+
+    bool collidingWall = false;
 
     void Start()
     {
@@ -73,25 +75,32 @@ public class TopDownPlayerControl : MonoBehaviour {
 
 	void MovePlayer()
 	{
-        float verticalSpeed = upVelocity - downVelocity;
-        float horizontalSpeed = rightVelocity - leftVelocity;
-        if(verticalSpeed > playerSpeedMax)
+        if(!collidingWall)
         {
-            verticalSpeed = playerSpeedMax;
+            float verticalSpeed = upVelocity - downVelocity;
+            float horizontalSpeed = rightVelocity - leftVelocity;
+            if (verticalSpeed > playerSpeedMax)
+            {
+                verticalSpeed = playerSpeedMax;
+            }
+            if (verticalSpeed < 0.0f - playerSpeedMax)
+            {
+                verticalSpeed = (0.0f - playerSpeedMax);
+            }
+            if (horizontalSpeed > playerSpeedMax)
+            {
+                horizontalSpeed = playerSpeedMax;
+            }
+            if (horizontalSpeed < 0.0f - playerSpeedMax)
+            {
+                horizontalSpeed = (0.0f - playerSpeedMax);
+            }
+            transform.Translate((rightVelocity - leftVelocity) * Time.deltaTime, (upVelocity - downVelocity) * Time.deltaTime, 0);
         }
-        if(verticalSpeed < 0.0f - playerSpeedMax)
+        else
         {
-            verticalSpeed = (0.0f - playerSpeedMax);
+            print("Colliding with Wall");
         }
-        if(horizontalSpeed > playerSpeedMax)
-        {
-            horizontalSpeed = playerSpeedMax;
-        }
-        if(horizontalSpeed < 0.0f - playerSpeedMax)
-        {
-            horizontalSpeed = (0.0f - playerSpeedMax);
-        }
-		transform.Translate((rightVelocity - leftVelocity) * Time.deltaTime, (upVelocity - downVelocity) * Time.deltaTime, 0);
 	}
 
 	void ReadDirection()
@@ -184,33 +193,33 @@ public class TopDownPlayerControl : MonoBehaviour {
         }
         return velocity;
     }
-	float setVelocityAccel(string key, float velocity)
-	{
-		if (Input.GetKey(key))
-		{
-			if (velocity < playerSpeedMin) // give an initial boost
-			{
-				velocity = playerSpeedMin;
-			}
-			else if (velocity < playerSpeedMax / 2 || playerSpeed < playerSpeedMax)// if the directional speed limit is not reached or this is the primary direction, increase velocity
-			{
-				velocity += accelerationSpeed * Time.deltaTime;
-			}
-			if (velocity > playerSpeedMax)
-			{
-				velocity = playerSpeedMax;
-			}
-			// if another direction is being used, adjust so total speed does not go above max.
-		}
-		else if (velocity > stopped)
-		{
-			velocity -= accelerationSpeed*2 * Time.deltaTime;
-			if (velocity < stopped)
-			{
-				velocity = stopped;
-			}
-		}
+	//float setVelocityAccel(string key, float velocity)
+	//{
+	//	if (Input.GetKey(key))
+	//	{
+	//		if (velocity < playerSpeedMin) // give an initial boost
+	//		{
+	//			velocity = playerSpeedMin;
+	//		}
+	//		else if (velocity < playerSpeedMax / 2 || playerSpeed < playerSpeedMax)// if the directional speed limit is not reached or this is the primary direction, increase velocity
+	//		{
+	//			velocity += accelerationSpeed * Time.deltaTime;
+	//		}
+	//		if (velocity > playerSpeedMax)
+	//		{
+	//			velocity = playerSpeedMax;
+	//		}
+	//		// if another direction is being used, adjust so total speed does not go above max.
+	//	}
+	//	else if (velocity > stopped)
+	//	{
+	//		velocity -= accelerationSpeed*2 * Time.deltaTime;
+	//		if (velocity < stopped)
+	//		{
+	//			velocity = stopped;
+	//		}
+	//	}
 
-		return velocity;
-	}
+	//	return velocity;
+	//}
 }
