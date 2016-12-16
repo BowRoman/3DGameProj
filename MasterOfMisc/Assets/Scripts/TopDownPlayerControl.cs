@@ -1,8 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class TopDownPlayerControl : MonoBehaviour {
+
+    public int enemiesToKill = 10; // TEMP! objective is spawned once this reaches 0
 
     [SerializeField]
     int playerHealthMax = 100;
@@ -63,8 +66,16 @@ public class TopDownPlayerControl : MonoBehaviour {
             if (playerHealth <= 5)
             {
                 playerHealth = 0;
-                // reset level / end game
+                SceneManager.LoadScene(0);
             }
+        }
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if(other.gameObject.tag == "Objective")
+        {
+            SceneManager.LoadScene(0);
         }
     }
 

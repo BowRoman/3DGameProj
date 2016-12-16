@@ -2,9 +2,13 @@
 using System.Collections;
 
 public class EnemyBasicWeaponControl : MonoBehaviour {
+    
+    int damageToPlayer;
 
-    [SerializeField]
-    int damageToPlayer = 20;
+    void Start()
+    {
+        damageToPlayer = transform.parent.gameObject.GetComponent<EnemyBasicControl>().damageToPlayer;
+    }
 
 	void OnTriggerEnter2D(Collider2D victim)
     {

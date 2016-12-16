@@ -5,6 +5,8 @@ using UnityEngine.UI;
 public class EnemyBasicControl : MonoBehaviour {
 
     [SerializeField]
+    GameObject objective;
+    [SerializeField]
     int healthMax = 50;
     int health = 50;
     [SerializeField]
@@ -12,13 +14,14 @@ public class EnemyBasicControl : MonoBehaviour {
     [SerializeField]
     float speed = 5;
     [SerializeField]
-    Transform player;
+    public int damageToPlayer = 20;
     [SerializeField]
-    Animator anim;
+    Transform player;
 
     [SerializeField]
+    Animator anim;
+    
     bool touchingPlayer = false;
-    [SerializeField]
     bool attacking = false;
     [SerializeField]
     float timeBetweenAttacks = 0.5f;
@@ -39,9 +42,16 @@ public class EnemyBasicControl : MonoBehaviour {
         if(!hasSeenPlayer)
         {
             Vector3 viewPos = Camera.main.WorldToViewportPoint(transform.position);
-            if(viewPos.x >= 0 && viewPos.x <= 1 && viewPos.y >= 0 && viewPos.y <= 1)
+            if(viewPos.x >= 0 && viewPos.x <= 1 && viewPos.y >= 0 && viewPos.y <= 1) // check if this enemy is visible on the screen
             {
-                hasSeenPlayer = true;
+                int layermask = 1 << 14; // enemy is on layer 14
+                layermask = ~layermask; // inverse layermask so it's all layers except 14
+                Vector2 direction = (player.transform.position - transform.position).normalized; // get the direction from this enemy to the player
+                RaycastHit2D rayHit = Physics2D.Raycast(transform.position, direction, Mathf.Infinity, layermask); // raycast to the player
+                if(rayHit.collider.gameObject.tag == "Player") // check if this enemy has a direct line of sight on the player
+                {
+                    hasSeenPlayer = true;
+                }
             }
         }
         else
@@ -88,6 +98,11 @@ public class EnemyBasicControl : MonoBehaviour {
             healthBar.fillAmount = (float)health / (float)healthMax;
             if (health <= 0)
             {
+                player.gameObject.GetComponent<TopDownPlayerControl>().enemiesToKill--;
+                if(player.gameObject.GetComponent<TopDownPlayerControl>().enemiesToKill <= 0)
+                {
+                    GameObject objClone = Instantiate(objective, transform.position, new Quaternion()) as GameObject;
+                }
                 Destroy(gameObject);
             }
         }
